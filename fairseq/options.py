@@ -414,7 +414,9 @@ def add_generation_args(parser):
     group.add_argument('--replace-unk', nargs='?', const=True, default=None,
                        help='perform unknown replacement (optionally with alignment dictionary)')
     group.add_argument('--sacrebleu', action='store_true',
-                       help='score with sacrebleu')
+                       help='score with sacrebleu (--sacrebleu-zh for Chinese)')
+    group.add_argument('--sacrebleu-zh', action='store_true',
+                       help='score Chinese with sacrebleu')
     group.add_argument('--score-reference', action='store_true',
                        help='just score the reference translation')
     group.add_argument('--prefix-size', default=0, type=int, metavar='PS',
@@ -444,6 +446,8 @@ def add_interactive_args(parser):
                        help='read this many sentences into a buffer before processing them')
     group.add_argument('--input', default='-', type=str, metavar='FILE',
                        help='file to read from; use - for stdin')
+    group.add_argument('--output', default='', type=str, metavar='FILE',
+                       help='file to write to')
     # fmt: on
 
 

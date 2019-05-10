@@ -85,7 +85,9 @@ def main(args):
     generator = task.build_generator(args)
 
     # Generate and compute BLEU score
-    if args.sacrebleu:
+    if args.sacrebleu_zh:
+        scorer = bleu.SacrebleuScorer(zh=True)
+    elif args.sacrebleu:
         scorer = bleu.SacrebleuScorer()
     else:
         scorer = bleu.Scorer(tgt_dict.pad(), tgt_dict.eos(), tgt_dict.unk())
@@ -178,7 +180,9 @@ def main(args):
     print('| Translated {} sentences ({} tokens) in {:.1f}s ({:.2f} sentences/s, {:.2f} tokens/s)'.format(
         num_sentences, gen_timer.n, gen_timer.sum, num_sentences / gen_timer.sum, 1. / gen_timer.avg))
     if has_target:
-        print('| Generate {} with beam={}: {}'.format(args.gen_subset, args.beam, scorer.result_string()))
+        bleu_obj = scorer.result_string()
+        print('| Generate {} with beam={}: {}'.format(args.gen_subset, args.beam, bleu_obj))
+        print('{0:.{1}f}'.format(bleu_obj.score, 1))
     return scorer
 
 

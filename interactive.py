@@ -113,6 +113,10 @@ def main(args):
         print('| Sentence buffer size:', args.buffer_size)
     print('| Type the input sentence and press return:')
     start_id = 0
+
+    if args.output != '':
+        output_file = open(args.output, 'w', encoding='utf-8')
+
     for inputs in buffered_read(args.input, args.buffer_size):
         results = []
         for batch in make_batches(inputs, args, task, max_positions):
@@ -149,6 +153,8 @@ def main(args):
                     tgt_dict=tgt_dict,
                     remove_bpe=args.remove_bpe,
                 )
+                if args.output != '':
+                    output_file.write(hypo_str + '\n')
                 print('H-{}\t{}\t{}'.format(id, hypo['score'], hypo_str))
                 print('P-{}\t{}'.format(
                     id,
@@ -162,6 +168,9 @@ def main(args):
 
         # update running id counter
         start_id += len(inputs)
+
+    if args.output != '':
+        output_file.close()
 
 
 def cli_main():

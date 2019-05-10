@@ -36,8 +36,9 @@ class BleuStat(ctypes.Structure):
 
 
 class SacrebleuScorer(object):
-    def __init__(self):
+    def __init__(self, zh=False):
         import sacrebleu
+        self.zh = zh  # whether scoring Chinese or not
         self.sacrebleu = sacrebleu
         self.reset()
 
@@ -57,7 +58,10 @@ class SacrebleuScorer(object):
     def result_string(self, order=4):
         if order != 4:
             raise NotImplementedError
-        return self.sacrebleu.corpus_bleu(self.sys, [self.ref])
+        if self.zh:
+            return self.sacrebleu.corpus_bleu(self.sys, [self.ref], tokenize='zh')
+        else:
+            return self.sacrebleu.corpus_bleu(self.sys, [self.ref])
 
 
 class Scorer(object):
