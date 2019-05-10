@@ -9,6 +9,7 @@
 Translate pre-processed data with a trained model.
 """
 
+import os
 import torch
 
 from fairseq import bleu, checkpoint_utils, options, progress_bar, tasks, utils
@@ -183,6 +184,8 @@ def main(args):
         bleu_obj = scorer.result_string()
         print('| Generate {} with beam={}: {}'.format(args.gen_subset, args.beam, bleu_obj))
         print('{0:.{1}f}'.format(bleu_obj.score, 1))
+        if args.rename:
+            os.rename(args.path, args.path[:-3] + '_{0:.{1}f}'.format(bleu_obj.score, 1) + '.pt')
     return scorer
 
 

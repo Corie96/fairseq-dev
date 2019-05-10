@@ -7,7 +7,6 @@ Python >= 3.6
 Tensorflow + TensorboardX
 
 
-
 # Prepare
 
 ```
@@ -19,7 +18,6 @@ python preprocess.py \
     --testpref ~/data/medical_mt_extended/tigermed_en32k_zh32k/test_sp \
     --destdir ~/data/medical_mt_extended/tigermed_en32k_zh32k/tigermed_en32k_zh32k_bin
 ```
-
 
 
 # Train
@@ -39,20 +37,29 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python train.py ~/data/medical_mt_extended/tigermed
     --label-smoothing 0.1 \
     --weight-decay 0.0 \
     --max-tokens 4096 \
-    --save-dir ~/model/medical_mt/fairseq_enzh_baseline/checkpoints \
     --update-freq 2 \
     --no-progress-bar \
     --log-format json \
     --log-interval 50 \
     --save-interval-updates 1000 \
     --keep-interval-updates 20 \
-    --tensorboard-logdir ~/model/medical_mt/fairseq_enzh_baseline/wmt_ende_conf_4gpu_tb_log
+    --save-dir ~/model/medical_mt/fairseq_enzh_baseline/checkpoints \
+    --tensorboard-logdir ~/model/medical_mt/fairseq_enzh_baseline/wmt_ende_conf_4gpu_tb_log \
+    --max-epoch 300
 ```
 
 ```
 tensorboard --logdir=~/model/medical_mt/fairseq_enzh_baseline/wmt_ende_conf_4gpu_tb_log
 ```
 
+
+# Average Checkpoints (Optional)
+
+```
+PYTHONPATH=~/fairseq-dev/ python ~/fairseq-dev/scripts/average_checkpoints.py \
+    --inputs checkpoint300_67.0.pt checkpoint299_67.1.pt checkpoint298_67.0.pt checkpoint297_66.9.pt checkpoint296_66.9.pt \
+    --output averaged_296-300.pt
+```
 
 
 # Score
@@ -62,15 +69,15 @@ Calculate the **normalized** BLEU score on the test (`--gen-subset valid` for de
 ```
 CUDA_VISIBLE_DEVICES=0 python generate.py ~/data/medical_mt_extended/tigermed_en32k_zh32k/tigermed_en32k_zh32k_bin \
 	--gen-subset test \
-    --path ~/model/medical_mt/fairseq_enzh_baseline/checkpoints/checkpoint_best.pt \
     --remove-bpe sentencepiece \
     --sacrebleu-zh \
     --beam 4 \
     --batch-size 64 \
     --lenpen 0.6 \
-    --quiet
+    --quiet \
+    --rename \
+    --path ~/model/medical_mt/fairseq_enzh_baseline/checkpoints/averaged_296-300.pt
 ```
-
 
 
 # Interactive
